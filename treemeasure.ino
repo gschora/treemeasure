@@ -18,7 +18,7 @@ unsigned long previousMillis = 0;
 const int blinkONInterval = 100; 
 const int blinkOFFInterval = 3000;
 
-const int chipSelect = 4;
+const int chipSelect = 15;
 // set up variables using the SD utility library functions:
 Sd2Card card;
 SdVolume volume;
