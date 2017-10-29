@@ -1,21 +1,22 @@
 #include <ESP8266WiFi.h>
-#include <ESP8266mDNS.h>
+#include <DNSServer.h>
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
-#include <SPI.h>
-#include <SD.h>
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
+#include <WiFiManager.h>
+#include <SPI.h>
+#include <SD.h>
 
-const char* ssid = "";
 const char* password = "";
 const char* host = "espMeasure";
 
-const int ledPin = 0; // blinking led pin
+const int redled = 0; // blinking led pin
+const int blueled = 2;
 bool ledState = 0;
 unsigned long previousMillis = 0;
-const int blinkONInterval = 1000; //reversed on esp red led
-const int blinkOFFInterval = 100;
+const int blinkONInterval = 100; 
+const int blinkOFFInterval = 3000;
 
 const int chipSelect = 4;
 // set up variables using the SD utility library functions:
@@ -36,7 +37,8 @@ void setup() {
   setupSD();
   setupHttp();
 
-  pinMode(ledPin, OUTPUT);
+  pinMode(redled, OUTPUT);
+  pinMode(blueled, OUTPUT);
 }
 
 void loop() {
@@ -46,13 +48,17 @@ void loop() {
 }
 
 void setupWIFI(){
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
+  // WiFiManager wifiManager;
+  WiFi.softAP(host,password);
+  WiFi.mode(WIFI_AP_STA);
+  WiFi.begin();
   while (WiFi.waitForConnectResult() != WL_CONNECTED) {
     Serial.println("Connection Failed! Rebooting...");
     delay(5000);
     ESP.restart();
   }
+
+  // wifiManager.autoConnect("espMeasure", "loa7by9m");
 }
 
 void setupOTA(){
@@ -117,19 +123,25 @@ void blink(){
 	unsigned long currentMillis = millis();
 
 	if(ledState == 0) {
-		if (currentMillis - previousMillis >= blinkOFFInterval) {
+		if (currentMillis - previousMillis >= blinkONInterval) {
 			previousMillis = currentMillis;
 			ledState = 1;
 		}
 	} else {
-		if(currentMillis - previousMillis >= blinkONInterval) {
+		if(currentMillis - previousMillis >= blinkOFFInterval) {
 			previousMillis = currentMillis;
       ledState = 0;
 		}
 	}
 
 	// set the LED with the ledState of the variable:
-	digitalWrite(ledPin, ledState);
+  digitalWrite(redled, ledState);
+  
+  if (WiFi.status() == WL_CONNECTED){
+    digitalWrite(blueled, ledState);
+  } else {
+    digitalWrite(blueled,1);
+  }
 
 }
 
@@ -150,6 +162,13 @@ void writeFile(String dataString){
   else {
     Serial.println("error opening datalog.txt");
   }
+}
+
+void configModeCallback (WiFiManager *myWiFiManager) {
+  Serial.println("Entered config mode");
+  Serial.println(WiFi.softAPIP());
+
+  Serial.println(myWiFiManager->getConfigPortalSSID());
 }
 
 void returnOK() {

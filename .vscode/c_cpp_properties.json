@@ -3,13 +3,15 @@
         {
             "name": "Win32",
             "includePath": [
-                "c:/Users/Hannes/AppData/Local/Arduino15/packages/esp8266/hardware/esp8266/2.3.0/libraries"
+                "c:/Users/Hannes/AppData/Local/Arduino15/packages/esp8266/hardware/esp8266/2.3.0/libraries",
+                "C:\\Users\\Hannes\\Documents\\Arduino\\libraries\\WiFiManager"
             ],
             "browse": {
                 "limitSymbolsToIncludedHeaders": false,
                 "path": [
                     "C:\\Users\\Hannes\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.3.0",
-                    "${workspaceRoot}"
+                    "${workspaceRoot}",
+                    "C:\\Users\\Hannes\\Documents\\Arduino\\libraries\\WiFiManager"
                 ]
             },
             "intelliSenseMode": "msvc-x64"
